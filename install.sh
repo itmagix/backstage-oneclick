@@ -45,21 +45,24 @@ echo "Installing Yarn globally"
 npm install --global yarn
 
 echo "Installing Docker CE"
-export DEBIAN_FRONTEND=noninteractive
-export DEBIAN_PRIORITY=critical
+
 
 OS=$(cat /etc/issue | awk {'print $1'})
 
-if [ $OS -eq "Debian" ]
+if [ $OS="Debian" ]
 then
   echo "Found $OS"
   export OS=debian
+  export DEBIAN_FRONTEND=noninteractive
+  export DEBIAN_PRIORITY=critical
 fi
 
-if [ $OS -eq "Ubuntu"]
+if [ $OS="Ubuntu"]
 then
   echo "Found $OS"
   export OS=ubuntu
+  export UBUNTU_FRONTEND=noninteractive
+  export UBUNTU_PRIORITY=critical
 fi
 
 sudo apt-get -yq update
