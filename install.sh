@@ -48,21 +48,19 @@ echo "Installing Docker CE"
 
 
 OS=$(cat /etc/issue | awk {'print $1'})
+export DEBIAN_FRONTEND=noninteractive
+export DEBIAN_PRIORITY=critical
 
 if [ $OS="Debian" ]
 then
   echo "Found $OS"
   export OS=debian
-  export DEBIAN_FRONTEND=noninteractive
-  export DEBIAN_PRIORITY=critical
 fi
 
 if [ $OS="Ubuntu"]
 then
   echo "Found $OS"
   export OS=ubuntu
-  export UBUNTU_FRONTEND=noninteractive
-  export UBUNTU_PRIORITY=critical
 fi
 
 sudo apt-get -yq update
