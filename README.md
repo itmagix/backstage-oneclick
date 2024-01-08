@@ -21,8 +21,8 @@ Starting with Backstage.io from scratch is not always that easy, so to kickstart
 2. Connect to your VM with SSH
 3. Set Environment variables
 ```
-export BS_NAME="DCP Engineers Hub"
-export BS_APP_NAME="DCP Engineers Hub Playground"
+export BS_NAME="Backstage Engineers Hub"
+export BS_APP_NAME="Backstage Playground"
 ```
 4. run the following command as a regular user
 ```
