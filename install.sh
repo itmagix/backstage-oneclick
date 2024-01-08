@@ -47,14 +47,29 @@ npm install --global yarn
 echo "Installing Docker CE"
 export DEBIAN_FRONTEND=noninteractive
 export DEBIAN_PRIORITY=critical
+
+OS=$(cat /etc/issue | awk {'print $1'})
+
+if [ $OS -eq "Debian" ]
+then
+  echo "Found $OS"
+  export OS=debian
+fi
+
+if [ $OS -eq "Ubuntu"]
+then
+  echo "Found $OS"
+  export OS=ubuntu
+fi
+
 sudo apt-get -yq update
-sudo apt-get -yq -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" install ca-certificates curl gnupg
+sudo apt-get -yq -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" install ca-certificates gnupg
 sudo install -m 0755 -d /etc/apt/keyrings
-sudo curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo curl -fsSL https://download.docker.com/linux/$OS/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 sudo chmod a+r /etc/apt/keyrings/docker.gpg
 
 echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/$OS \
   $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
