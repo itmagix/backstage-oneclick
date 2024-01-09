@@ -64,48 +64,52 @@ sudo gpasswd -a admin docker
 sudo systemctl enable --now docker
 
 
+# Did you set the Environment variables?
+if [ -z "$BS_APP_NAME" ]; then
+    echo "Variable BS_APP_NAME not set, using default" >> /home/admin/phase1-install.log
+    export BS_APP_NAME="Playground"
+    echo "Variable BS_APP_NAME is set to: $BS_APP_NAME" >> /home/admin/phase1-install.log
+else
+    echo "Variable BS_APP_NAME is set to: $BS_APP_NAME" >> /home/admin/phase1-install.log
+fi
+
+if [ -z "$BS_NAME" ]; then
+    echo "Variable BS_APP_NAME not set, using default" >> /home/admin/phase1-install.log
+    export BS_NAME="My Kingdom"
+    echo "Variable BS_NAME is set to: $BS_NAME" >> /home/admin/phase1-install.log
+else
+    echo "Variable BS_NAME is set to: $BS_NAME" >> /home/admin/phase1-install.log
+fi
 
 # Creating a first-boot script
-echo "Creating first-boot script"
+echo "Creating first-boot script" >> /home/admin/phase1-install.log
 
 cat << EOF > bs-firstboot.sh
 #!/bin/bash
 # Install Backstage.io
-echo "Installing Backstage.io Playground"
+echo "Installing Backstage.io Playground" > /home/admin/firstboot.log
 echo backstage-playground | npx @backstage/create-app@latest
 cd backstage-playground
 
 # Setting the correct baseUrl
 sed -i "s/baseUrl: http:\/\/localhost:3000/baseUrl: \"https:\/\/backstage.idpbuilder.cnoe.io.local:8443\"/g" app-config.yaml
 
-# Did you set the Environment variables?
-if [ -z "${BS_APP_NAME}" ]; then
-    echo "Variable BS_APP_NAME not set, using default"
-    export BS_APP_NAME="Playground"
-    echo "Variable BS_APP_NAME is set to: ${BS_APP_NAME}"
-else
-    echo "Variable BS_APP_NAME is set to: ${BS_APP_NAME}"
-fi
 
-if [ -z "${BS_NAME}" ]; then
-    echo "Variable BS_APP_NAME not set, using default"
-    export BS_NAME="My Kingdom"
-    echo "Variable BS_NAME is set to: ${BS_NAME}"
-else
-    echo "Variable BS_NAME is set to: ${BS_NAME}"
-fi
 
 sed -i "s/Scaffolded Backstage App/${BS_APP_NAME}/g" app-config.yaml
 sed -i "s/name: My Company/name: ${BS_NAME}/g" app-config.yaml
 
 # Starting Backstage.io
-echo "Starting Backstage.io
+echo "Starting Backstage.io" >> /home/admin/firstboot.log
 su -c 'yarn dev' admin &
 
 # Self-destruct first-boot script
+echo "Self destruct first-boot script" >> /home/admin/firstboot.log
 rm -rf ${0}
 EOF
 
+chmod +x bs-firstboot.sh
 sudo mv bs-firstboot.sh /etc/init.d/
 
-sudo reboot
+echo "Jippie het werkt tot zover" >> /home/admin/phase1-install.log
+# sudo reboot
