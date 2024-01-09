@@ -63,10 +63,19 @@ sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--forc
 sudo gpasswd -a admin docker
 sudo systemctl enable --now docker
 
+
+
+# Creating a first-boot script
+echo "Creating first-boot script"
+
+cat << EOF > bs-firstboot.sh
+#!/bin/bash
+# Install Backstage.io
 echo "Installing Backstage.io Playground"
 echo backstage-playground | npx @backstage/create-app@latest
 cd backstage-playground
 
+# Setting the correct baseUrl
 sed -i "s/baseUrl: http:\/\/localhost:3000/baseUrl: \"https:\/\/backstage.idpbuilder.cnoe.io.local:8443\"/g" app-config.yaml
 
 # Did you set the Environment variables?
@@ -81,13 +90,22 @@ fi
 if [ -z "${BS_NAME}" ]; then
     echo "Variable BS_APP_NAME not set, using default"
     export BS_NAME="My Kingdom"
-    echo "Variable BS_APP_NAME is set to: ${BS_NAME}"
+    echo "Variable BS_NAME is set to: ${BS_NAME}"
 else
-    echo "Variable BS_APP_NAME is set to: ${BS_NAME}"
+    echo "Variable BS_NAME is set to: ${BS_NAME}"
 fi
 
-sed -i "s/Scaffolded Backstage App/$BS_APP_NAME/g" app-config.yaml
-sed -i "s/name: My Company/name: $BS_NAME/g" app-config.yaml
+sed -i "s/Scaffolded Backstage App/${BS_APP_NAME}/g" app-config.yaml
+sed -i "s/name: My Company/name: ${BS_NAME}/g" app-config.yaml
 
 # Starting Backstage.io
-yarn dev
+echo "Starting Backstage.io
+su -c 'yarn dev' admin &
+
+# Self-destruct first-boot script
+rm -rf ${0}
+EOF
+
+sudo mv bs-firstboot.sh /etc/init.d/
+
+sudo reboot
