@@ -70,6 +70,22 @@ cd backstage-playground
 sed -i "s/baseUrl: http:\/\/localhost:3000/baseUrl: \"https:\/\/backstage.idpbuilder.cnoe.io.local:8443\"/g" app-config.yaml
 
 # Did you set the Environment variables?
+if [ -z "${BS_APP_NAME}" ]; then
+    echo "Variable BS_APP_NAME not set, using default"
+    export BS_APP_NAME="Playground"
+    echo "Variable BS_APP_NAME is set to: ${BS_APP_NAME}"
+else
+    echo "Variable BS_APP_NAME is set to: ${BS_APP_NAME}"
+fi
+
+if [ -z "${BS_NAME}" ]; then
+    echo "Variable BS_APP_NAME not set, using default"
+    export BS_NAME="My Kingdom"
+    echo "Variable BS_APP_NAME is set to: ${BS_NAME}"
+else
+    echo "Variable BS_APP_NAME is set to: ${BS_NAME}"
+fi
+
 sed -i "s/Scaffolded Backstage App/$BS_APP_NAME/g" app-config.yaml
 sed -i "s/name: My Company/name: $BS_NAME/g" app-config.yaml
 
