@@ -107,11 +107,24 @@ su -c 'yarn dev' admin &
 
 # Self-destruct first-boot script
 echo "Self destruct first-boot script" >> /home/admin/firstboot.log
-# rm -rf bs-firstboot.sh # Weer aanzetten na het testen of voor prod gebruik
+systemctl disable --now bs-firstboot.service
+EOF
+
+cat << EOF > bs-firstboot.service
+[Unit]
+Description=Your Service Description
+
+[Service]
+ExecStart=/home/admin/bs-firstboot.sh
+
+[Install]
+WantedBy=multi-user.target
 EOF
 
 chmod +x bs-firstboot.sh
-sudo mv bs-firstboot.sh /etc/init.d/
+# sudo mv bs-firstboot.sh /etc/init.d/
+sudo systemctl daemon-reload
+sudo systemctl enable bs-firstboot.service
 
 echo "Jippie het werkt tot zover" >> /home/admin/phase1-install.log
 # sudo reboot
