@@ -87,25 +87,27 @@ echo "Creating first-boot script" >> /home/admin/phase1-install.log
 cat << EOF > bs-firstboot.sh
 #!/bin/bash
 # Install Backstage.io
+export PATH=$PATH:/home/admin/.nvm/versions/node/$(node --version)/bin
 echo "Installing Backstage.io Playground" > /home/admin/firstboot.log
+cd /home/admin
 echo backstage-playground | npx @backstage/create-app@latest
 cd backstage-playground
 
 # Setting the correct baseUrl
 sed -i "s/baseUrl: http:\/\/localhost:3000/baseUrl: \"https:\/\/backstage.idpbuilder.cnoe.io.local:8443\"/g" app-config.yaml
 
-
-
-sed -i "s/Scaffolded Backstage App/${BS_APP_NAME}/g" app-config.yaml
-sed -i "s/name: My Company/name: ${BS_NAME}/g" app-config.yaml
+sed -i "s/Scaffolded Backstage App/$BS_APP_NAME/g" app-config.yaml
+sed -i "s/name: My Company/name: $BS_NAME/g" app-config.yaml
 
 # Starting Backstage.io
 echo "Starting Backstage.io" >> /home/admin/firstboot.log
+
+chown -R admin:admin /home/admin/backstage-playground
 su -c 'yarn dev' admin &
 
 # Self-destruct first-boot script
 echo "Self destruct first-boot script" >> /home/admin/firstboot.log
-rm -rf ${0}
+# rm -rf bs-firstboot.sh # Weer aanzetten na het testen of voor prod gebruik
 EOF
 
 chmod +x bs-firstboot.sh
