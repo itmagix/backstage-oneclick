@@ -108,7 +108,7 @@ echo "Installing new Yarn packages" >> /home/admin/firstboot.log
 wget -O /home/admin/backstage-playground/package.json https://raw.githubusercontent.com/itmagix/backstage-oneclick/feature/first-boot-script-before-deploying-backstage/package.json >> /home/admin/firstboot.log
 
 echo "Installing new Yarn packages" >> /home/admin/firstboot.log
-yarn install
+yarn install >> /home/admin/firstboot.log
 
 echo "Starting Backstage.io local development environment" >> /home/admin/firstboot.log
 su -c 'yarn dev' admin &
