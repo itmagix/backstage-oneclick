@@ -60,7 +60,7 @@ echo \
 
 sudo apt-get -qy update
 sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-sudo gpasswd -a admin docker
+sudo gpasswd -a $USER docker
 sudo systemctl enable --now docker
 
 
@@ -102,7 +102,7 @@ sed -i "s/name: My Company/name: $BS_NAME/g" app-config.yaml
 # Starting Backstage.io
 echo "Starting Backstage.io" >> $HOME/firstboot.log
 
-chown -R admin:admin $HOME/backstage-playground
+chown -R $USER:$USER $HOME/backstage-playground
 
 echo "Installing new Yarn packages" >> $HOME/firstboot.log
 wget -O $HOME/backstage-playground/package.json https://raw.githubusercontent.com/itmagix/backstage-oneclick/feature/first-boot-script-before-deploying-backstage/package.json >> $HOME/firstboot.log
@@ -111,7 +111,7 @@ echo "Installing new Yarn packages" >> $HOME/firstboot.log
 yarn install >> $HOME/firstboot.log
 
 echo "Starting Backstage.io local development environment" >> $HOME/firstboot.log
-su -c 'yarn dev' admin &
+su -c 'yarn dev' $USER &
 
 # Self-destruct first-boot script
 echo "Self destruct first-boot script" >> $HOME/firstboot.log
