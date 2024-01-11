@@ -63,15 +63,77 @@ sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--forc
 sudo gpasswd -a admin docker
 sudo systemctl enable --now docker
 
-echo "Installing Backstage.io Playground"
+
+# Did you set the Environment variables?
+if [ -z "$BS_APP_NAME" ]; then
+    echo "Variable BS_APP_NAME not set, using default" >> $HOME/phase1-install.log
+    export BS_APP_NAME="Playground"
+    echo "Variable BS_APP_NAME is set to: $BS_APP_NAME" >> $HOME/phase1-install.log
+else
+    echo "Variable BS_APP_NAME is set to: $BS_APP_NAME" >> $HOME/phase1-install.log
+fi
+
+if [ -z "$BS_NAME" ]; then
+    echo "Variable BS_APP_NAME not set, using default" >> $HOME/phase1-install.log
+    export BS_NAME="My Kingdom"
+    echo "Variable BS_NAME is set to: $BS_NAME" >> $HOME/phase1-install.log
+else
+    echo "Variable BS_NAME is set to: $BS_NAME" >> $HOME/phase1-install.log
+fi
+
+# Creating a first-boot script
+echo "Creating first-boot script" >> $HOME/phase1-install.log
+
+cat << EOF > bs-firstboot.sh
+#!/bin/bash
+# Install Backstage.io
+export PATH=$PATH:$HOME/.nvm/versions/node/$(node --version)/bin
+echo "Installing Backstage.io Playground" > $HOME/firstboot.log
+cd $HOME
 echo backstage-playground | npx @backstage/create-app@latest
 cd backstage-playground
 
-sed -i "s/baseUrl: http:\/\/localhost:3000/baseUrl: \"https:\/\/backstage.idpbuilder.cnoe.io.local:8443\"/g" app-config.yaml
-
-# Did you set the Environment variables?
+# Setting the correct baseUrl
+# sed -i "s/baseUrl: http:\/\/localhost:3000/baseUrl: \"https:\/\/backstage.idpbuilder.cnoe.io.local:8443\"/g" app-config.yaml
+sed -i "s/# host: 127.0.0.1/host: 0.0.0.0/g" app-config.yaml
 sed -i "s/Scaffolded Backstage App/$BS_APP_NAME/g" app-config.yaml
 sed -i "s/name: My Company/name: $BS_NAME/g" app-config.yaml
 
 # Starting Backstage.io
-yarn dev
+echo "Starting Backstage.io" >> $HOME/firstboot.log
+
+chown -R admin:admin $HOME/backstage-playground
+
+echo "Installing new Yarn packages" >> $HOME/firstboot.log
+wget -O $HOME/backstage-playground/package.json https://raw.githubusercontent.com/itmagix/backstage-oneclick/feature/first-boot-script-before-deploying-backstage/package.json >> $HOME/firstboot.log
+
+echo "Installing new Yarn packages" >> $HOME/firstboot.log
+yarn install >> $HOME/firstboot.log
+
+echo "Starting Backstage.io local development environment" >> $HOME/firstboot.log
+su -c 'yarn dev' admin &
+
+# Self-destruct first-boot script
+echo "Self destruct first-boot script" >> $HOME/firstboot.log
+systemctl disable --now bs-firstboot.service
+EOF
+
+cat << EOF > bs-firstboot.service
+[Unit]
+Description=Your Service Description
+
+[Service]
+ExecStart=$HOME/bs-firstboot.sh
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+chmod +x bs-firstboot.sh
+# sudo mv bs-firstboot.sh /etc/init.d/
+sudo mv bs-firstboot.service /etc/systemd/system/ 
+sudo systemctl daemon-reload
+sudo systemctl enable bs-firstboot.service
+
+echo "Phase 1: Done! Rebooting Server!" >> $HOME/phase1-install.log
+sudo reboot
