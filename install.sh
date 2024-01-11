@@ -94,8 +94,8 @@ echo backstage-playground | npx @backstage/create-app@latest
 cd backstage-playground
 
 # Setting the correct baseUrl
-sed -i "s/baseUrl: http:\/\/localhost:3000/baseUrl: \"https:\/\/backstage.idpbuilder.cnoe.io.local:8443\"/g" app-config.yaml
-
+# sed -i "s/baseUrl: http:\/\/localhost:3000/baseUrl: \"https:\/\/backstage.idpbuilder.cnoe.io.local:8443\"/g" app-config.yaml
+sed -i "s/#host: 127.0.0.1/host: 0.0.0.0/g" app-config.yaml
 sed -i "s/Scaffolded Backstage App/$BS_APP_NAME/g" app-config.yaml
 sed -i "s/name: My Company/name: $BS_NAME/g" app-config.yaml
 
@@ -103,6 +103,8 @@ sed -i "s/name: My Company/name: $BS_NAME/g" app-config.yaml
 echo "Starting Backstage.io" >> /home/admin/firstboot.log
 
 chown -R admin:admin /home/admin/backstage-playground
+cp /home/admin/backstage-oneclick/package.json /home/admin/backstage-playground
+
 su -c 'yarn dev' admin &
 
 # Self-destruct first-boot script
@@ -115,7 +117,7 @@ cat << EOF > bs-firstboot.service
 Description=Your Service Description
 
 [Service]
-ExecStart=/home/admin/bs-firstboot.sh
+ExecStart=/home/admin/backstage-oneclick/bs-firstboot.sh
 
 [Install]
 WantedBy=multi-user.target
@@ -123,8 +125,9 @@ EOF
 
 chmod +x bs-firstboot.sh
 # sudo mv bs-firstboot.sh /etc/init.d/
+sudo mv bs-firstboot.service /etc/systemd/system/ 
 sudo systemctl daemon-reload
 sudo systemctl enable bs-firstboot.service
 
 echo "Jippie het werkt tot zover" >> /home/admin/phase1-install.log
-# sudo reboot
+sudo reboot
