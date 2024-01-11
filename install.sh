@@ -95,7 +95,7 @@ cd backstage-playground
 
 # Setting the correct baseUrl
 # sed -i "s/baseUrl: http:\/\/localhost:3000/baseUrl: \"https:\/\/backstage.idpbuilder.cnoe.io.local:8443\"/g" app-config.yaml
-sed -i "s/#host: 127.0.0.1/host: 0.0.0.0/g" app-config.yaml
+sed -i "s/# host: 127.0.0.1/host: 0.0.0.0/g" app-config.yaml
 sed -i "s/Scaffolded Backstage App/$BS_APP_NAME/g" app-config.yaml
 sed -i "s/name: My Company/name: $BS_NAME/g" app-config.yaml
 
