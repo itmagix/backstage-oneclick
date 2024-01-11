@@ -103,8 +103,10 @@ sed -i "s/name: My Company/name: $BS_NAME/g" app-config.yaml
 echo "Starting Backstage.io" >> /home/admin/firstboot.log
 
 chown -R admin:admin /home/admin/backstage-playground
-#cp /home/admin/backstage-oneclick/package.json /home/admin/backstage-playground
-wget https://raw.githubusercontent.com/itmagix/backstage-oneclick/feature/first-boot-script-before-deploying-backstage/package.json /home/admin/backstage-playground/package.json
+
+echo "Installing new Yarn packages" >> /home/admin/firstboot.log
+wget -O /home/admin/backstage-playground/package.json https://raw.githubusercontent.com/itmagix/backstage-oneclick/feature/first-boot-script-before-deploying-backstage/package.json >> /home/admin/firstboot.log
+
 echo "Installing new Yarn packages" >> /home/admin/firstboot.log
 yarn install
 
