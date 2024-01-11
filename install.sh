@@ -66,30 +66,30 @@ sudo systemctl enable --now docker
 
 # Did you set the Environment variables?
 if [ -z "$BS_APP_NAME" ]; then
-    echo "Variable BS_APP_NAME not set, using default" >> /home/admin/phase1-install.log
+    echo "Variable BS_APP_NAME not set, using default" >> $HOME/phase1-install.log
     export BS_APP_NAME="Playground"
-    echo "Variable BS_APP_NAME is set to: $BS_APP_NAME" >> /home/admin/phase1-install.log
+    echo "Variable BS_APP_NAME is set to: $BS_APP_NAME" >> $HOME/phase1-install.log
 else
-    echo "Variable BS_APP_NAME is set to: $BS_APP_NAME" >> /home/admin/phase1-install.log
+    echo "Variable BS_APP_NAME is set to: $BS_APP_NAME" >> $HOME/phase1-install.log
 fi
 
 if [ -z "$BS_NAME" ]; then
-    echo "Variable BS_APP_NAME not set, using default" >> /home/admin/phase1-install.log
+    echo "Variable BS_APP_NAME not set, using default" >> $HOME/phase1-install.log
     export BS_NAME="My Kingdom"
-    echo "Variable BS_NAME is set to: $BS_NAME" >> /home/admin/phase1-install.log
+    echo "Variable BS_NAME is set to: $BS_NAME" >> $HOME/phase1-install.log
 else
-    echo "Variable BS_NAME is set to: $BS_NAME" >> /home/admin/phase1-install.log
+    echo "Variable BS_NAME is set to: $BS_NAME" >> $HOME/phase1-install.log
 fi
 
 # Creating a first-boot script
-echo "Creating first-boot script" >> /home/admin/phase1-install.log
+echo "Creating first-boot script" >> $HOME/phase1-install.log
 
 cat << EOF > bs-firstboot.sh
 #!/bin/bash
 # Install Backstage.io
-export PATH=$PATH:/home/admin/.nvm/versions/node/$(node --version)/bin
-echo "Installing Backstage.io Playground" > /home/admin/firstboot.log
-cd /home/admin
+export PATH=$PATH:$HOME/.nvm/versions/node/$(node --version)/bin
+echo "Installing Backstage.io Playground" > $HOME/firstboot.log
+cd $HOME
 echo backstage-playground | npx @backstage/create-app@latest
 cd backstage-playground
 
@@ -100,21 +100,21 @@ sed -i "s/Scaffolded Backstage App/$BS_APP_NAME/g" app-config.yaml
 sed -i "s/name: My Company/name: $BS_NAME/g" app-config.yaml
 
 # Starting Backstage.io
-echo "Starting Backstage.io" >> /home/admin/firstboot.log
+echo "Starting Backstage.io" >> $HOME/firstboot.log
 
-chown -R admin:admin /home/admin/backstage-playground
+chown -R admin:admin $HOME/backstage-playground
 
-echo "Installing new Yarn packages" >> /home/admin/firstboot.log
-wget -O /home/admin/backstage-playground/package.json https://raw.githubusercontent.com/itmagix/backstage-oneclick/feature/first-boot-script-before-deploying-backstage/package.json >> /home/admin/firstboot.log
+echo "Installing new Yarn packages" >> $HOME/firstboot.log
+wget -O $HOME/backstage-playground/package.json https://raw.githubusercontent.com/itmagix/backstage-oneclick/feature/first-boot-script-before-deploying-backstage/package.json >> $HOME/firstboot.log
 
-echo "Installing new Yarn packages" >> /home/admin/firstboot.log
-yarn install >> /home/admin/firstboot.log
+echo "Installing new Yarn packages" >> $HOME/firstboot.log
+yarn install >> $HOME/firstboot.log
 
-echo "Starting Backstage.io local development environment" >> /home/admin/firstboot.log
+echo "Starting Backstage.io local development environment" >> $HOME/firstboot.log
 su -c 'yarn dev' admin &
 
 # Self-destruct first-boot script
-echo "Self destruct first-boot script" >> /home/admin/firstboot.log
+echo "Self destruct first-boot script" >> $HOME/firstboot.log
 systemctl disable --now bs-firstboot.service
 EOF
 
@@ -123,7 +123,7 @@ cat << EOF > bs-firstboot.service
 Description=Your Service Description
 
 [Service]
-ExecStart=/home/admin/bs-firstboot.sh
+ExecStart=$HOME/bs-firstboot.sh
 
 [Install]
 WantedBy=multi-user.target
@@ -135,5 +135,5 @@ sudo mv bs-firstboot.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable bs-firstboot.service
 
-echo "Phase 1: Done! Rebooting Server!" >> /home/admin/phase1-install.log
+echo "Phase 1: Done! Rebooting Server!" >> $HOME/phase1-install.log
 sudo reboot
