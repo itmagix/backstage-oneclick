@@ -117,7 +117,7 @@ cat << EOF > bs-firstboot.service
 Description=Your Service Description
 
 [Service]
-ExecStart=/home/admin/backstage-oneclick/bs-firstboot.sh
+ExecStart=/home/admin/bs-firstboot.sh
 
 [Install]
 WantedBy=multi-user.target
