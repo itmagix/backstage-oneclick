@@ -81,6 +81,10 @@ else
     echo "Variable BS_NAME is set to: $BS_NAME" >> $HOME/phase1-install.log
 fi
 
+# --no-node-snapshot is needed since we are using Node 20 or alter
+# as per https://backstage.io/docs/getting-started/configuration#create-a-new-component-using-a-software-template
+export NODE_OPTIONS=--no-node-snapshot
+
 # Creating a first-boot script
 echo "Creating first-boot script" >> $HOME/phase1-install.log
 
