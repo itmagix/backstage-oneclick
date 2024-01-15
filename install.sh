@@ -105,7 +105,7 @@ echo "Starting Backstage.io" >> $HOME/firstboot.log
 echo "Installing new Yarn packages" >> $HOME/firstboot.log
 wget -O $HOME/backstage-playground/package.json https://raw.githubusercontent.com/itmagix/backstage-oneclick/feature/first-boot-script-before-deploying-backstage/package.json >> $HOME/firstboot.log
 
-chown -R $USER:$USER $HOME/backstage-playground
+chown -R $USER:$USER $HOME/backstage-playground/
 
 echo "Installing new Yarn packages" >> $HOME/firstboot.log
 yarn install >> $HOME/firstboot.log
