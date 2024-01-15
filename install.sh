@@ -16,52 +16,52 @@ sudo sh -c 'echo "vm.swappiness=10" >> /etc/sysctl.conf'
 cat << EOF > base-upgrade.sh
 #!/usr/bin/sh
 sudo apt update
-sudo UCF_FORCE_CONFFOLD=1 apt -yq -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade
+sudo UCF_FORCE_CONFFOLD=1 apt -yq -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade 
 sudo UCF_FORCE_CONFFOLD=1 apt -yq -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install build-essential git curl tmux zsh bpytop htop neovim
 sudo apt-get -qy autoclean
 EOF
-bash ./base-upgrade.sh
+bash ./base-upgrade.sh >> $HOME/phase1-install.log
 rm -rf ./base-upgrade.sh
 
 # Set Neovim as default editor
-sudo update-alternatives --set editor $(update-alternatives --list editor | grep nvim)
+sudo update-alternatives --set editor $(update-alternatives --list editor | grep nvim) >> $HOME/phase1-install.log
 
 # Remove unused packages
-sudo apt-get -qy auto-remove
-sudo apt-get -qy auto-remove nano
+sudo apt-get -qy auto-remove >> $HOME/phase1-install.log
+sudo apt-get -qy auto-remove nano >> $HOME/phase1-install.log
 
 # Remove password requirement for regular sudo users
-echo "root    ALL=(ALL:ALL) NOPASSWD: ALL" | (sudo su -c 'EDITOR="tee -a" visudo -f /etc/sudoers.d/nopasswd')
+echo "root    ALL=(ALL:ALL) NOPASSWD: ALL" | (sudo su -c 'EDITOR="tee -a" visudo -f /etc/sudoers.d/nopasswd') >> $HOME/phase1-install.log
 
 # Install Backstage.io Sandbox App
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash >> $HOME/phase1-install.log
 export NVM_DIR=$HOME/.nvm
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-echo "Installing LTS version of NodeJS"
-nvm install --lts
+echo "Installing LTS version of NodeJS" >> $HOME/phase1-install.log
+nvm install --lts >> $HOME/phase1-install.log
 
 echo "Installing Yarn globally"
-npm install --global yarn
+npm install --global yarn >> $HOME/phase1-install.log
 
 echo "Installing Docker CE"
 export DEBIAN_FRONTEND=noninteractive
 export DEBIAN_PRIORITY=critical
-sudo apt-get -yq update
-sudo apt-get -yq -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" install ca-certificates curl gnupg
-sudo install -m 0755 -d /etc/apt/keyrings
-sudo curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-sudo chmod a+r /etc/apt/keyrings/docker.gpg
+sudo apt-get -yq update >> $HOME/phase1-install.log
+sudo apt-get -yq -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" install ca-certificates curl gnupg >> $HOME/phase1-install.log
+sudo install -m 0755 -d /etc/apt/keyrings >> $HOME/phase1-install.log
+sudo curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg >> $HOME/phase1-install.log
+sudo chmod a+r /etc/apt/keyrings/docker.gpg >> $HOME/phase1-install.log
 
 echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
   $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-sudo apt-get -qy update
-sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-sudo gpasswd -a $USER docker
-sudo systemctl enable --now docker
+sudo apt-get -qy update >> $HOME/phase1-install.log
+sudo apt-get -qy -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin >> $HOME/phase1-install.log
+sudo gpasswd -a $USER docker >> $HOME/phase1-install.log
+sudo systemctl enable --now docker >> $HOME/phase1-install.log
 
 
 # Did you set the Environment variables?
@@ -115,7 +115,7 @@ su -c 'yarn dev' $USER &
 
 # Self-destruct first-boot script
 echo "Self destruct first-boot script" >> $HOME/firstboot.log
-systemctl disable --now bs-firstboot.service
+systemctl disable --now bs-firstboot.service >> $HOME/phase1-install.log
 EOF
 
 cat << EOF > bs-firstboot.service
@@ -131,9 +131,9 @@ EOF
 
 chmod +x bs-firstboot.sh
 # sudo mv bs-firstboot.sh /etc/init.d/
-sudo mv bs-firstboot.service /etc/systemd/system/ 
-sudo systemctl daemon-reload
-sudo systemctl enable bs-firstboot.service
+sudo mv bs-firstboot.service /etc/systemd/system/
+sudo systemctl daemon-reload >> $HOME/phase1-install.log
+sudo systemctl enable bs-firstboot.service >> $HOME/phase1-install.log
 
 echo "Phase 1: Done! Rebooting Server!" >> $HOME/phase1-install.log
-sudo reboot
+sudo reboot >> $HOME/phase1-install.log
