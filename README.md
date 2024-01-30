@@ -19,12 +19,24 @@ Starting with Backstage.io from scratch is not always that easy, so to kickstart
 ## Deployment
 1. Open VS Code
 2. Connect to your VM with SSH
-3. run the following command as a regular user
+3. Make sure curl and netstat present. If not - install:
+   ```
+   sudo apt-get install curl
+   sudo apt-get install net-tools
+   ```   
+5. run the following command as a regular user
 ```
 curl -o- https://raw.githubusercontent.com/itmagix/backstage-oneclick/main/install.sh | bash
 ```
 4. After above script is done, VM will restart, reconnect via VSCode SSH after restart is finished
-5. Once VM is spun up, `bs-firstboot.sh` will run automatically and boot up Backstage. Monitor `firstboot.log` for verification. 
-    * **NOTE:** This will only happen the first time, next time you restart the VM you have to run `yarn dev` inside `backstage-playground` folder
-6. To connect to the front-end, open ports *3000* and *7007*. In Visual Studio Code this can be done from the ports tab.
-7. Open localhost:3000 to find our deployed Backstage environment.
+5. Once VM is spun up, `bs-firstboot.sh` will run automatically and boot up Backstage. Monitor `firstboot.log` for verification:
+   ```
+   tail -f firstboot.log
+   ```
+   * **NOTE:** This will only happen the first time, next time you restart the VM you have to run `yarn dev` inside `backstage-playground` folder
+7. After installation complete check that backstage is running on localhost:3000:
+   ```
+   netstat -tlpn
+   ```
+9. To connect to the front-end, open ports *3000* and *7007*. In Visual Studio Code this can be done from the ports tab.
+10. Open localhost:3000 to find our deployed Backstage environment.
