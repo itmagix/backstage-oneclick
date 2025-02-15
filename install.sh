@@ -92,7 +92,7 @@ cat << EOF > bs-firstboot.sh
 #!/bin/bash
 # Install Backstage.io
 export PATH=$PATH:$HOME/.nvm/versions/node/$(node --version)/bin
-echo "Installing Backstage.io Playground" > $HOME/firstboot.log
+echo $(date +[%R]) "Installing Backstage.io Playground. It could take a few minutes" > $HOME/firstboot.log
 cd $HOME
 echo backstage-playground | npx @backstage/create-app@latest
 cd backstage-playground
@@ -104,21 +104,21 @@ sed -i "s/Scaffolded Backstage App/$BS_APP_NAME/g" app-config.yaml
 sed -i "s/name: My Company/name: $BS_NAME/g" app-config.yaml
 
 # Starting Backstage.io
-echo "Starting Backstage.io" >> $HOME/firstboot.log
+echo $(date +[%R]) "Starting Backstage.io" >> $HOME/firstboot.log
 
-echo "Installing new Yarn packages" >> $HOME/firstboot.log
+echo $(date +[%R]) "Installing new Yarn packages" >> $HOME/firstboot.log
 wget -O $HOME/backstage-playground/package.json https://raw.githubusercontent.com/itmagix/backstage-oneclick/feature/first-boot-script-before-deploying-backstage/package.json >> $HOME/firstboot.log
 
 chown -R $USER:$USER $HOME/backstage-playground/
 
-echo "Installing new Yarn packages" >> $HOME/firstboot.log
+echo $(date +[%R]) "Installing new Yarn packages" >> $HOME/firstboot.log
 yarn install >> $HOME/firstboot.log
 
-echo "Starting Backstage.io local development environment" >> $HOME/firstboot.log
+echo $(date +[%R]) "Starting Backstage.io local development environment" >> $HOME/firstboot.log
 su -c 'yarn dev' $USER &
 
 # Self-destruct first-boot script
-echo "Self destruct first-boot script" >> $HOME/firstboot.log
+echo $(date +[%R]) "Self destruct first-boot script" >> $HOME/firstboot.log
 systemctl disable --now bs-firstboot.service >> $HOME/phase1-install.log
 EOF
 
